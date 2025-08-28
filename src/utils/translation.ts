@@ -93,7 +93,7 @@ const translateBatch = async (
   customPrompt?: PromptTemplate
 ): Promise<string[]> => {
   const systemPrompt = customPrompt ? customPrompt.systemPrompt : generateSystemPrompt(settings, glossary);
-  const userPrompt = customPrompt ? customPrompt.userPrompt.replace('{texts}', texts.map((text, index) => `${index + 1}. ${text}`).join('\n')) : generateUserPrompt(texts);
+  const userPrompt = customPrompt ? customPrompt.userPrompt.replace('{texts}', texts.map((text, index) => `${index + 1}. ${text}`).join('\n')) : generateUserPrompt(texts, settings);
   
   // Log which prompt template is being used
   if (customPrompt) {
@@ -158,97 +158,14 @@ const generateSystemPrompt = (settings: TranslationSettings, glossary: GlossaryT
     'mr-IN': 'Marathi'
   };
 
-  // Language-specific quality rules
-  const languageQualityRules = settings.target === 'hi-IN' ? `
-HINDI TRANSLATION QUALITY RULES (MANDATORY):
+  // Load custom prompt from localStorage
+  const savedPrompt = localStorage.getItem('translation-prompt');
+  if (savedPrompt) {
+    const parsed = JSON.parse(savedPrompt);
+    return parsed.systemPrompt.replace(/target language/g, languageMap[settings.target]);
+  }
 
-1. TONE AND REGISTER:
-- Use natural, accessible Hindi over overly formal or Sanskritised phrases
-- Avoid bureaucratic vocabulary unless contextually required
-- Use second-person respectful singular (आप, कीजिए) consistently for professional but friendly tone
-
-2. FORMAL WORDS TO REPLACE:
-- औपचारिक → ज़रूरी / सरकारी
-- प्रस्ताव → योजना
-- स्पष्टता → साफ़ समझ
-- प्रशिक्षण → सीखने की पहल
-- प्रक्रिया → तरीका
-- संदर्भ → साथ / स्थिति के अनुसार
-- विश्लेषण → जांच / समझ
-- सुलभ → आसान / सरल
-- स्थापित → मज़बूत करना / बनाना
-- सहभागिता → भागीदारी / हिस्सा लेना
-
-3. STRUCTURE & FORMAT:
-- Ensure row-wise alignment between English and Hindi
-- Use consistent column mappings: "Question" → "प्रश्न", "Option1" → "विकल्प 1", "Correct ans" → "सही उत्तर"
-- NEVER add serial numbers to column headers - translate them exactly as specified
-- Strip serial numbers or prefix numerals from analysis for content cells only
-
-4. LITERAL TRANSLATION CHECKS:
-- Avoid calque translations (literal word-for-word copying of English structure)
-- Use natural Hindi idioms where appropriate
-- Simplify English-origin phrases like "समय प्रबंधन"
-
-5. GRAMMAR CONSISTENCY:
-- Ensure gender agreement and postposition accuracy
-- Maintain consistent honorific usage
-- Avoid mixing pronouns (don't switch between आप and तुम)
-
-6. CULTURAL & CONTEXTUAL ADAPTATION:
-- Use terms familiar to Indian audiences
-- Use Indian names and scenarios in examples when applicable
-` : settings.target === 'mr-IN' ? `
-MARATHI TRANSLATION QUALITY RULES (MANDATORY):
-
-1. TONE AND REGISTER:
-- Use natural, accessible Marathi over overly formal or Sanskritised phrases
-- Avoid bureaucratic vocabulary unless contextually required
-- Use respectful tone appropriate for general content
-
-2. FORMAL WORDS TO REPLACE:
-- औपचारिक → आवश्यक / सरकारी
-- प्रस्ताव → योजना
-- स्पष्टता → स्पष्ट समज
-- प्रशिक्षण → शिकण्याची सुरुवात
-- प्रक्रिया → पद्धत
-- संदर्भ → स्थिती / परिस्थितीनुसार
-- विश्लेषण → तपासणी / समज
-- सुलभ → सोपे / सरळ
-- स्थापित → मजबूत करणे / तयार करणे
-- सहभागिता → सहभाग / भाग घेणे
-
-3. STRUCTURE & FORMAT:
-- Ensure row-wise alignment between English and Marathi
-- Use consistent column mappings: "Question" → "प्रश्न", "Option1" → "पर्याय 1", "Correct ans" → "योग्य उत्तर"
-- NEVER add serial numbers to column headers - translate them exactly as specified
-- Strip serial numbers or prefix numerals from analysis for content cells only
-
-4. LITERAL TRANSLATION CHECKS:
-- Avoid calque translations (literal word-for-word copying of English structure)
-- Use natural Marathi idioms where appropriate
-- Simplify English-origin phrases
-
-5. GRAMMAR CONSISTENCY:
-- Ensure proper Marathi grammar and sentence structure
-- Maintain consistent tone and register
-- Use appropriate Marathi vocabulary
-
-6. CULTURAL & CONTEXTUAL ADAPTATION:
-- Use terms familiar to Indian audiences
-- Use Indian names and scenarios in examples when applicable
-` : '';
-
-  // General translation rules
-  const generalRules = `
-GENERAL TRANSLATION RULES:
-- Use natural, accessible language appropriate for the content
-- Maintain consistency in terminology throughout the translation
-- Preserve the original meaning and context
-- Use clear, understandable phrasing
-- Adapt to the target language's natural expression patterns
-`;
-
+  // Default prompt if no custom prompt is saved
   return `You are a professional translator for Indian languages. Translate the provided Excel cell texts into ${languageMap[settings.target]}.
 
 MANDATORY NUMBER TRANSLATION RULES:
@@ -256,6 +173,14 @@ MANDATORY NUMBER TRANSLATION RULES:
 - 0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९
 - This includes standalone numbers, numbers in text, and any numeric content
 - NEVER leave Arabic numerals untranslated
+
+TRANSLATION QUALITY RULES:
+- Use natural, accessible language over overly formal phrases
+- Adapt tone to match the content type (formal for business, casual for general content)
+- Maintain consistency in terminology throughout the translation
+- Preserve the original meaning and context
+- Use clear, understandable phrasing
+- Adapt to the target language's natural expression patterns
 
 CRITICAL RULES:
 - NEVER change meaning or context
@@ -269,26 +194,35 @@ CRITICAL RULES:
 - If a term appears multiple times, translate it consistently
 - Ensure complete translation - do not leave any English text untranslated
 
-${languageQualityRules}
-${generalRules}
-
 Return only the translated strings, one per line, in the exact same order as input.`;
 };
 
-const generateUserPrompt = (texts: string[]): string => {
-  return `Translate these Excel cell contents into Hindi. Translate ALL text content completely:
+const generateUserPrompt = (texts: string[], settings: TranslationSettings): string => {
+  const languageMap = {
+    'hi-IN': 'Hindi',
+    'mr-IN': 'Marathi'
+  };
+
+  // Load custom prompt from localStorage
+  const savedPrompt = localStorage.getItem('translation-prompt');
+  if (savedPrompt) {
+    const parsed = JSON.parse(savedPrompt);
+    return parsed.userPrompt.replace('{texts}', texts.map((text, index) => `${index + 1}. ${text}`).join('\n'));
+  }
+
+  // Default user prompt
+  return `Translate these Excel cell contents into ${languageMap[settings.target]}. Translate ALL text content completely:
 
 ${texts.map((text, index) => `${index + 1}. ${text}`).join('\n')}
 
 CRITICAL REQUIREMENTS: 
 - Translate every word and phrase completely
 - Do not leave any English text untranslated
-- ALWAYS convert ALL numbers to Hindi numerals (0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९)
+- ALWAYS convert ALL numbers to ${languageMap[settings.target]} numerals
 - Be consistent with terminology
-- Provide complete Hindi translations
-- Use natural, accessible Hindi
+- Provide complete translations
+- Use natural, accessible language
 - Avoid overly formal or bureaucratic language
-- For column headers (Question, Option1, Option2, etc.), translate exactly without adding serial numbers
 
 Provide translations in the same order, one per line:`;
 };
