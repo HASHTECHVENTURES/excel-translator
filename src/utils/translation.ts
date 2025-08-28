@@ -246,6 +246,12 @@ EDUCATIONAL CONTEXT RULES:
 - Prefer simple, clear explanations over complex terminology
 - Use examples and analogies familiar to Indian students
 - Maintain academic rigor while being approachable
+` : settings.domain === 'admin' ? `
+ADMINISTRATIVE CONTEXT RULES:
+- Use professional language appropriate for administrative documents
+- Maintain administrative terminology where contextually appropriate
+- Use respectful tone throughout
+- Preserve technical terms and industry-specific vocabulary
 ` : '';
 
   return `You are a professional translator for Indian languages. Translate the provided Excel cell texts into ${languageMap[settings.target]}.

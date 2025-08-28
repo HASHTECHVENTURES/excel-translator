@@ -214,30 +214,30 @@ Provide translations in the same order, one per line:`,
       updatedAt: new Date()
     },
     {
-      id: 'formal-hindi',
+      id: 'hindi-business',
       name: 'Hindi (Business)',
-      description: 'Formal Hindi translation suitable for business and administrative documents',
-      systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into formal Hindi suitable for business and administrative contexts.
+      description: 'Hindi translation suitable for business and administrative documents',
+      systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into Hindi suitable for business and administrative contexts.
 
 MANDATORY NUMBER TRANSLATION RULES:
 - ALWAYS convert ALL Arabic numerals (0-9) to Hindi numerals
 - 0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९
 
 BUSINESS TRANSLATION RULES:
-- Use formal, professional Hindi appropriate for business documents
-- Maintain bureaucratic and administrative terminology where contextually appropriate
-- Use respectful and formal tone throughout
+- Use professional Hindi appropriate for business documents
+- Maintain administrative terminology where contextually appropriate
+- Use respectful tone throughout
 - Preserve technical terms and industry-specific vocabulary
 - Ensure consistency in terminology across all translations
 
 Return only the translated strings, one per line, in the exact same order as input.`,
-      userPrompt: `Translate these Excel cell contents into formal Hindi suitable for business contexts:
+      userPrompt: `Translate these Excel cell contents into Hindi suitable for business contexts:
 
 {texts}
 
 CRITICAL REQUIREMENTS: 
 - Translate every word and phrase completely
-- Use formal, professional Hindi
+- Use professional Hindi
 - ALWAYS convert ALL numbers to Hindi numerals
 - Maintain business-appropriate terminology
 - Provide complete Hindi translations
@@ -250,28 +250,28 @@ Provide translations in the same order, one per line:`,
     {
       id: 'marathi-business',
       name: 'Marathi (Business)',
-      description: 'Formal Marathi translation suitable for business and administrative documents',
-      systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into formal Marathi suitable for business and administrative contexts.
+      description: 'Marathi translation suitable for business and administrative documents',
+      systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into Marathi suitable for business and administrative contexts.
 
 MANDATORY NUMBER TRANSLATION RULES:
 - ALWAYS convert ALL Arabic numerals (0-9) to Marathi numerals
 - 0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९
 
 BUSINESS TRANSLATION RULES:
-- Use formal, professional Marathi appropriate for business documents
-- Maintain bureaucratic and administrative terminology where contextually appropriate
-- Use respectful and formal tone throughout
+- Use professional Marathi appropriate for business documents
+- Maintain administrative terminology where contextually appropriate
+- Use respectful tone throughout
 - Preserve technical terms and industry-specific vocabulary
 - Ensure consistency in terminology across all translations
 
 Return only the translated strings, one per line, in the exact same order as input.`,
-      userPrompt: `Translate these Excel cell contents into formal Marathi suitable for business contexts:
+      userPrompt: `Translate these Excel cell contents into Marathi suitable for business contexts:
 
 {texts}
 
 CRITICAL REQUIREMENTS: 
 - Translate every word and phrase completely
-- Use formal, professional Marathi
+- Use professional Marathi
 - ALWAYS convert ALL numbers to Marathi numerals
 - Maintain business-appropriate terminology
 - Provide complete Marathi translations
