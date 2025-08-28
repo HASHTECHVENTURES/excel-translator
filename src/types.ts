@@ -43,6 +43,7 @@ export type WorkbookState = {
   stats: TranslationStats;
   isProcessing: boolean;
   currentSheet?: string;
+  currentPromptTemplate?: any;
 };
 
 export type LanguageOption = {

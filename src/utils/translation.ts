@@ -1,4 +1,5 @@
 import { Cell, TranslationSettings, GlossaryTerm } from '../types';
+import { PromptTemplate } from '../components/PromptEditor';
 
 const GEMINI_API_KEY = 'AIzaSyD_H_MSp1zjV3PFJo4cYIQZLIczD8ROPsA';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
@@ -7,7 +8,8 @@ export const translateCells = async (
   cells: Cell[],
   settings: TranslationSettings,
   glossary: GlossaryTerm[],
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  customPrompt?: PromptTemplate
 ): Promise<Cell[]> => {
   const cellsToTranslate = cells.filter(cell => 
     cell.v && (typeof cell.v === 'string' || typeof cell.v === 'number') && !cell.skip
@@ -30,7 +32,7 @@ export const translateCells = async (
     try {
       console.log(`🔄 Processing batch ${Math.floor(i / batchSize) + 1}, cells ${i + 1}-${Math.min(i + batchSize, cellsToTranslate.length)}`);
       
-      const translations = await translateBatch(texts, settings, glossary);
+      const translations = await translateBatch(texts, settings, glossary, customPrompt);
       
       console.log(`📊 Batch ${Math.floor(i / batchSize) + 1} results:`, {
         textsSent: texts.length,
@@ -87,10 +89,11 @@ export const translateCells = async (
 const translateBatch = async (
   texts: string[],
   settings: TranslationSettings,
-  glossary: GlossaryTerm[]
+  glossary: GlossaryTerm[],
+  customPrompt?: PromptTemplate
 ): Promise<string[]> => {
-  const systemPrompt = generateSystemPrompt(settings, glossary);
-  const userPrompt = generateUserPrompt(texts);
+  const systemPrompt = customPrompt ? customPrompt.systemPrompt : generateSystemPrompt(settings, glossary);
+  const userPrompt = customPrompt ? customPrompt.userPrompt.replace('{texts}', texts.map((text, index) => `${index + 1}. ${text}`).join('\n')) : generateUserPrompt(texts);
   
   const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
     method: 'POST',

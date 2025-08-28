@@ -5,6 +5,7 @@ import { SheetSelector } from './components/SheetSelector';
 import { PreviewTable } from './components/PreviewTable';
 import { ProgressModal } from './components/ProgressModal';
 import QualityReportComponent from './components/QualityReport';
+import PromptEditor, { PromptTemplate } from './components/PromptEditor';
 import { 
   WorkbookState, 
   TranslationSettings as Settings, 
@@ -15,7 +16,7 @@ import {
 import { parseExcelFile, exportToExcel, shouldSkipCell } from './utils/excel';
 import { translateCells } from './utils/translation';
 import { checkTranslationQuality } from './utils/qualityChecker';
-import { Download, RotateCcw, FileSpreadsheet, CheckCircle } from 'lucide-react';
+import { Download, RotateCcw, FileSpreadsheet, CheckCircle, Settings as SettingsIcon } from 'lucide-react';
 
 const initialState: WorkbookState = {
   fileName: '',
@@ -45,6 +46,8 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [qualityReport, setQualityReport] = useState<any>(null);
   const [showQualityReport, setShowQualityReport] = useState(false);
+  const [showPromptEditor, setShowPromptEditor] = useState(false);
+  const [currentPromptTemplate, setCurrentPromptTemplate] = useState<PromptTemplate | null>(null);
 
   const handleFileUpload = useCallback(async (file: File) => {
     try {
@@ -204,7 +207,8 @@ function App() {
             (progress) => {
               const overallProgress = (i + progress) / sheetsToTranslate.length;
               setProgress(overallProgress);
-            }
+            },
+            currentPromptTemplate
           );
           
           console.log('✅ Translation results:', translatedCells.map(cell => ({
@@ -414,7 +418,16 @@ function App() {
           {currentStep === 'settings' && state.sheets.length > 0 && (
             <>
               <div className="card">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Select Language</h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900">Select Language</h2>
+                  <button
+                    onClick={() => setShowPromptEditor(true)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                  >
+                    <SettingsIcon className="w-4 h-4" />
+                    Customize Prompts
+                  </button>
+                </div>
                 <TranslationSettings
                   settings={state.settings}
                   glossary={state.glossary}
@@ -537,6 +550,21 @@ function App() {
             <QualityReportComponent
               report={qualityReport}
               onClose={() => setShowQualityReport(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Prompt Editor Modal */}
+      {showPromptEditor && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="max-w-7xl w-full max-h-[90vh] overflow-y-auto">
+            <PromptEditor
+              onPromptChange={(template) => {
+                setCurrentPromptTemplate(template);
+                setShowPromptEditor(false);
+              }}
+              currentTemplate={currentPromptTemplate}
             />
           </div>
         </div>
