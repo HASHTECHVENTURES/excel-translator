@@ -132,7 +132,12 @@ const translateBatch = async (
   
   console.log('📝 Parsed translations:', translations);
   
-  return translations;
+  // Post-process translations to fix common issues
+  const processedTranslations = postProcessTranslations(translations, texts);
+  
+  console.log('🔧 Post-processed translations:', processedTranslations);
+  
+  return processedTranslations;
 };
 
 const generateSystemPrompt = (settings: TranslationSettings, glossary: GlossaryTerm[]): string => {
@@ -266,6 +271,76 @@ const parseTranslationResponse = (response: string, expectedCount: number): stri
   }
   
   return translations;
+};
+
+// Post-process translations to fix common issues
+const postProcessTranslations = (translations: string[], originalTexts: string[]): string[] => {
+  const columnHeaders = ['Question', 'Option1', 'Option2', 'Option3', 'Option4', 'Correct ans', 'Answer', 'Explanation'];
+  
+  // Formal word replacements for better colloquial Hindi
+  const formalWordReplacements: Record<string, string> = {
+    'औपचारिक': 'ज़रूरी',
+    'प्रस्ताव': 'योजना',
+    'स्पष्टता': 'साफ़ समझ',
+    'प्रशिक्षण': 'सीखने की पहल',
+    'प्रक्रिया': 'तरीका',
+    'संदर्भ': 'साथ',
+    'विश्लेषण': 'जांच',
+    'सुलभ': 'आसान',
+    'स्थापित': 'मज़बूत करना',
+    'सहभागिता': 'भागीदारी',
+    'कार्यान्वयन': 'लागू करना',
+    'परिणाम': 'नतीजा',
+    'उद्देश्य': 'लक्ष्य',
+    'प्राप्ति': 'हासिल करना',
+    'व्यवस्था': 'इंतज़ाम',
+    'प्रबंधन': 'संचालन',
+    'विकास': 'बढ़ावा',
+    'सुधार': 'बेहतर बनाना',
+    'निरीक्षण': 'जांच',
+    'परीक्षण': 'टेस्ट'
+  };
+  
+  return translations.map((translation, index) => {
+    const originalText = originalTexts[index];
+    
+    // Fix column headers - remove serial numbers and ensure correct format
+    if (columnHeaders.includes(originalText.trim())) {
+      // Remove any serial numbers (both Arabic and Hindi numerals)
+      let cleaned = translation.replace(/^[०-९0-9]+\.\s*/, '');
+      
+      // Ensure correct column header translations
+      const headerMappings: Record<string, string> = {
+        'Question': 'प्रश्न',
+        'Option1': 'विकल्प 1',
+        'Option2': 'विकल्प 2',
+        'Option3': 'विकल्प 3',
+        'Option4': 'विकल्प 4',
+        'Correct ans': 'सही उत्तर',
+        'Answer': 'उत्तर',
+        'Explanation': 'व्याख्या'
+      };
+      
+      const expectedTranslation = headerMappings[originalText.trim()];
+      if (expectedTranslation && cleaned !== expectedTranslation) {
+        console.log(`🔧 Fixing column header: "${originalText}" -> "${cleaned}" -> "${expectedTranslation}"`);
+        return expectedTranslation;
+      }
+      
+      return cleaned;
+    }
+    
+    // Replace formal words with colloquial alternatives (for non-column headers)
+    let processedTranslation = translation;
+    for (const [formalWord, colloquialWord] of Object.entries(formalWordReplacements)) {
+      if (processedTranslation.includes(formalWord)) {
+        processedTranslation = processedTranslation.replace(new RegExp(formalWord, 'g'), colloquialWord);
+        console.log(`🔧 Replacing formal word: "${formalWord}" -> "${colloquialWord}"`);
+      }
+    }
+    
+    return processedTranslation;
+  });
 };
 
 export const getLanguageOptions = () => [

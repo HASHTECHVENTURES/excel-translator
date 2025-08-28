@@ -243,8 +243,7 @@ const checkStructure = (originalText: string, translatedText: string): QualityIs
     if (originalText.trim() === english) {
       // Remove serial numbers and extra formatting from translated text for comparison
       const cleanTranslatedText = translatedText
-        .replace(/^\d+\.\s*/, '') // Remove leading serial numbers like "४. "
-        .replace(/^\d+\.\s*/, '') // Remove leading serial numbers like "५. "
+        .replace(/^[०-९0-9]+\.\s*/, '') // Remove leading serial numbers (both Arabic and Hindi numerals)
         .trim();
       
       if (cleanTranslatedText !== hindi) {
