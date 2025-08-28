@@ -26,7 +26,6 @@ const initialState: WorkbookState = {
   settings: {
     target: 'hi-IN',
     tone: 'neutral',
-    domain: 'technical',
     quality: 'balanced'
   },
   stats: {
@@ -306,8 +305,7 @@ function App() {
                 if (cell.translated && typeof cell.v === 'string') {
                   const report = checkTranslationQuality(
                     cell.v,
-                    cell.translated,
-                    state.settings.domain
+                    cell.translated
                   );
                   qualityIssues.push(...report.issues);
                   totalScore += report.score;

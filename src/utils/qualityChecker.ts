@@ -75,7 +75,6 @@ const GRAMMAR_PATTERNS = {
 export const checkTranslationQuality = (
   originalText: string,
   translatedText: string,
-  context: 'marketing' | 'technical' = 'technical',
   language: 'hi-IN' | 'mr-IN' = 'hi-IN'
 ): QualityReport => {
   const issues: QualityIssue[] = [];
@@ -93,7 +92,7 @@ export const checkTranslationQuality = (
   issues.push(...grammarIssues);
   
   // Check tone consistency
-  const toneIssues = checkTone(translatedText, context);
+  const toneIssues = checkTone(translatedText);
   issues.push(...toneIssues);
   
   // Check structure alignment
@@ -197,30 +196,28 @@ const checkGrammar = (text: string): QualityIssue[] => {
   return issues;
 };
 
-const checkTone = (text: string, context: string): QualityIssue[] => {
+const checkTone = (text: string): QualityIssue[] => {
   const issues: QualityIssue[] = [];
   
-  // Check for overly formal tone in technical context
-  if (context === 'technical') {
-    const formalIndicators = [
-      'कृपया ध्यान दें',
-      'सावधानीपूर्वक',
-      'अत्यंत महत्वपूर्ण',
-      'निम्नलिखित बिंदुओं पर ध्यान दें'
-    ];
-    
-    for (const indicator of formalIndicators) {
-      if (text.includes(indicator)) {
-        issues.push({
-          type: 'tone',
-          severity: 'low',
-          message: 'Overly formal tone detected for technical context.',
-          suggestion: 'Use more accessible, clear language.',
-          originalText: '',
-          translatedText: text
-        });
-        break;
-      }
+  // Check for overly formal tone in general context
+  const formalIndicators = [
+    'कृपया ध्यान दें',
+    'सावधानीपूर्वक',
+    'अत्यंत महत्वपूर्ण',
+    'निम्नलिखित बिंदुओं पर ध्यान दें'
+  ];
+  
+  for (const indicator of formalIndicators) {
+    if (text.includes(indicator)) {
+      issues.push({
+        type: 'tone',
+        severity: 'low',
+        message: 'Overly formal tone detected.',
+        suggestion: 'Use more accessible, clear language.',
+        originalText: '',
+        translatedText: text
+      });
+      break;
     }
   }
   

@@ -50,7 +50,7 @@ HINDI TRANSLATION QUALITY RULES (MANDATORY):
 
 1. TONE AND REGISTER:
 - Use natural, accessible Hindi over overly formal or Sanskritised phrases
-- Avoid bureaucratic vocabulary unless contextually required
+- Adapt tone to match the content type (formal for business, casual for general content)
 - Use second-person respectful singular (आप, कीजिए) consistently for professional but friendly tone
 
 2. FORMAL WORDS TO REPLACE:
@@ -84,6 +84,14 @@ HINDI TRANSLATION QUALITY RULES (MANDATORY):
 6. CULTURAL & CONTEXTUAL ADAPTATION:
 - Use terms familiar to Indian audiences
 - Use Indian names and scenarios in examples when applicable
+- Adapt to the content type while maintaining natural Hindi
+
+GENERAL TRANSLATION RULES:
+- Use natural, accessible language appropriate for any content type
+- Maintain consistency in terminology throughout the translation
+- Preserve the original meaning and context
+- Use clear, understandable phrasing
+- Adapt to the target language's natural expression patterns
 
 CRITICAL RULES:
 - NEVER change meaning or context
@@ -133,8 +141,8 @@ MARATHI TRANSLATION QUALITY RULES (MANDATORY):
 
 1. TONE AND REGISTER:
 - Use natural, accessible Marathi over overly formal or Sanskritised phrases
-- Avoid bureaucratic vocabulary unless contextually required
-- Use respectful tone appropriate for general content
+- Adapt tone to match the content type (formal for business, casual for general content)
+- Use respectful tone appropriate for any content
 
 2. FORMAL WORDS TO REPLACE:
 - औपचारिक → आवश्यक / सरकारी
@@ -167,6 +175,14 @@ MARATHI TRANSLATION QUALITY RULES (MANDATORY):
 6. CULTURAL & CONTEXTUAL ADAPTATION:
 - Use terms familiar to Indian audiences
 - Use Indian names and scenarios in examples when applicable
+- Adapt to the content type while maintaining natural Marathi
+
+GENERAL TRANSLATION RULES:
+- Use natural, accessible language appropriate for any content type
+- Maintain consistency in terminology throughout the translation
+- Preserve the original meaning and context
+- Use clear, understandable phrasing
+- Adapt to the target language's natural expression patterns
 
 CRITICAL RULES:
 - NEVER change meaning or context

@@ -13,7 +13,7 @@ A modern, responsive web application that translates Excel files into Indian lan
 
 ### 🎛️ Advanced Controls
 - **Tone selection** - Formal, Neutral, or Conversational
-- **Domain-specific** - Marketing or Technical content
+- **General translation** - Works for any type of content
 - **Glossary support** - Preserve brand terms and custom replacements
 - **Protected columns** - Skip translation for specific columns
 - **Sheet selection** - Choose which sheets to translate
@@ -88,7 +88,6 @@ The built files will be in the `dist` directory.
 ### Step 2: Configure Translation Settings
 - **Target Language**: Choose Hindi or Marathi
 - **Tone**: Select formality level (Formal, Neutral, Conversational)
-- **Domain**: Specify content type (Marketing or Technical) for better context
 - **Glossary**: Add terms to preserve or replace
 - **Sheet Selection**: Choose which sheets to translate
 - **Protected Columns**: Mark columns that shouldn't be translated

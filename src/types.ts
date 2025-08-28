@@ -24,7 +24,6 @@ export type GlossaryTerm = {
 export type TranslationSettings = {
   target: 'hi-IN' | 'mr-IN';
   tone: 'formal' | 'neutral' | 'conversational';
-  domain: 'marketing' | 'technical';
   quality: 'fast' | 'balanced' | 'high';
 };
 
@@ -58,10 +57,6 @@ export type ToneOption = {
   description: string;
 };
 
-export type DomainOption = {
-  value: 'marketing' | 'technical';
-  label: string;
-  description: string;
-};
+
 
 

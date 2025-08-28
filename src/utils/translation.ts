@@ -239,20 +239,15 @@ MARATHI TRANSLATION QUALITY RULES (MANDATORY):
 - Use Indian names and scenarios in examples when applicable
 ` : '';
 
-  // Domain-specific rules
-  const domainRules = settings.domain === 'marketing' ? `
-MARKETING CONTEXT RULES:
-- Use engaging, persuasive language appropriate for marketing materials
-- Maintain brand voice and messaging consistency
-- Use creative and appealing terminology
-- Focus on customer engagement and conversion
-` : settings.domain === 'technical' ? `
-TECHNICAL CONTEXT RULES:
-- Use precise technical terminology
-- Maintain accuracy in technical descriptions
-- Use clear, concise language for technical documentation
-- Preserve technical terms and industry-specific vocabulary
-` : '';
+  // General translation rules
+  const generalRules = `
+GENERAL TRANSLATION RULES:
+- Use natural, accessible language appropriate for the content
+- Maintain consistency in terminology throughout the translation
+- Preserve the original meaning and context
+- Use clear, understandable phrasing
+- Adapt to the target language's natural expression patterns
+`;
 
   return `You are a professional translator for Indian languages. Translate the provided Excel cell texts into ${languageMap[settings.target]}.
 
@@ -275,7 +270,7 @@ CRITICAL RULES:
 - Ensure complete translation - do not leave any English text untranslated
 
 ${languageQualityRules}
-${domainRules}
+${generalRules}
 
 Return only the translated strings, one per line, in the exact same order as input.`;
 };
@@ -410,10 +405,7 @@ export const getToneOptions = () => [
   { value: 'conversational' as const, label: 'Conversational', description: 'Friendly and approachable tone' }
 ];
 
-export const getDomainOptions = () => [
-  { value: 'marketing' as const, label: 'Marketing', description: 'Marketing materials and campaigns' },
-  { value: 'technical' as const, label: 'Technical', description: 'Technical documentation and manuals' }
-];
+
 
 // Test function to verify custom prompts are working
 export const testCustomPrompt = async (customPrompt: PromptTemplate): Promise<boolean> => {
@@ -422,7 +414,6 @@ export const testCustomPrompt = async (customPrompt: PromptTemplate): Promise<bo
     const testSettings: TranslationSettings = {
       target: 'hi-IN',
       tone: 'neutral',
-      domain: 'technical',
       quality: 'balanced'
     };
     
