@@ -35,7 +35,12 @@ const FORMAL_WORDS_MAP: Record<string, string[]> = {
   'परिणाम': ['नतीजा', 'फल'],
   'उद्देश्य': ['लक्ष्य', 'मकसद'],
   'प्राप्ति': ['हासिल करना', 'पाना'],
-  'व्यवस्था': ['इंतज़ाम', 'बंदोबस्त']
+  'व्यवस्था': ['इंतज़ाम', 'बंदोबस्त'],
+  'प्रबंधन': ['संचालन', 'प्रबंध'],
+  'विकास': ['बढ़ावा', 'उन्नति'],
+  'सुधार': ['बेहतर बनाना', 'सुधारना'],
+  'निरीक्षण': ['जांच', 'देखना'],
+  'परीक्षण': ['टेस्ट', 'जांच']
 };
 
 // Common literal translations to avoid
@@ -105,9 +110,13 @@ const checkFormalWords = (text: string): QualityIssue[] => {
   
   for (const [formalWord, alternatives] of Object.entries(FORMAL_WORDS_MAP)) {
     if (text.includes(formalWord)) {
+      // Check if this is a column header or standalone term
+      const isColumnHeader = /^(Question|Option\d+|Correct ans|Answer|Explanation)$/i.test(text);
+      const severity = isColumnHeader ? 'low' : 'medium';
+      
       issues.push({
         type: 'formal_word',
-        severity: 'medium',
+        severity,
         message: `Formal word "${formalWord}" detected. Consider using more colloquial alternatives.`,
         suggestion: `Replace "${formalWord}" with: ${alternatives.join(', ')}`,
         originalText: '',
@@ -231,15 +240,23 @@ const checkStructure = (originalText: string, translatedText: string): QualityIs
   };
   
   for (const [english, hindi] of Object.entries(columnMappings)) {
-    if (originalText.trim() === english && translatedText.trim() !== hindi) {
-      issues.push({
-        type: 'structure',
-        severity: 'high',
-        message: `Inconsistent column header translation. Expected "${hindi}" for "${english}".`,
-        suggestion: `Use "${hindi}" for consistent column mapping.`,
-        originalText,
-        translatedText
-      });
+    if (originalText.trim() === english) {
+      // Remove serial numbers and extra formatting from translated text for comparison
+      const cleanTranslatedText = translatedText
+        .replace(/^\d+\.\s*/, '') // Remove leading serial numbers like "४. "
+        .replace(/^\d+\.\s*/, '') // Remove leading serial numbers like "५. "
+        .trim();
+      
+      if (cleanTranslatedText !== hindi) {
+        issues.push({
+          type: 'structure',
+          severity: 'high',
+          message: `Inconsistent column header translation. Expected "${hindi}" for "${english}".`,
+          suggestion: `Use "${hindi}" for consistent column mapping. Remove serial numbers from column headers.`,
+          originalText,
+          translatedText
+        });
+      }
     }
   }
   

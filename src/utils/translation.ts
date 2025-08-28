@@ -165,7 +165,8 @@ HINDI TRANSLATION QUALITY RULES (MANDATORY):
 3. STRUCTURE & FORMAT:
 - Ensure row-wise alignment between English and Hindi
 - Use consistent column mappings: "Question" → "प्रश्न", "Option1" → "विकल्प 1", "Correct ans" → "सही उत्तर"
-- Strip serial numbers or prefix numerals from analysis
+- NEVER add serial numbers to column headers - translate them exactly as specified
+- Strip serial numbers or prefix numerals from analysis for content cells only
 
 4. LITERAL TRANSLATION CHECKS:
 - Avoid calque translations (literal word-for-word copying of English structure)
@@ -231,6 +232,7 @@ CRITICAL REQUIREMENTS:
 - Provide complete Hindi translations
 - Use colloquial, student-friendly Hindi for educational content
 - Avoid overly formal or bureaucratic language
+- For column headers (Question, Option1, Option2, etc.), translate exactly without adding serial numbers
 
 Provide translations in the same order, one per line:`;
 };
