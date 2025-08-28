@@ -16,7 +16,7 @@ import {
 import { parseExcelFile, exportToExcel, shouldSkipCell } from './utils/excel';
 import { translateCells } from './utils/translation';
 import { checkTranslationQuality } from './utils/qualityChecker';
-import { Download, RotateCcw, FileSpreadsheet, CheckCircle, Settings as SettingsIcon } from 'lucide-react';
+import { Download, RotateCcw, FileSpreadsheet, CheckCircle, Settings as SettingsIcon, XCircle } from 'lucide-react';
 
 const initialState: WorkbookState = {
   fileName: '',
