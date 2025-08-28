@@ -35,8 +35,8 @@ const PromptEditor: React.FC<PromptEditorProps> = ({ onPromptChange, currentTemp
   const defaultTemplates: PromptTemplate[] = [
     {
       id: 'default-hindi',
-      name: 'Default Hindi (Educational)',
-      description: 'Standard Hindi translation with educational context and quality rules',
+      name: 'Hindi (Educational)',
+      description: 'Hindi translation with educational context and quality rules',
       systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into Hindi.
 
 MANDATORY NUMBER TRANSLATION RULES:
@@ -124,8 +124,98 @@ Provide translations in the same order, one per line:`,
       updatedAt: new Date()
     },
     {
+      id: 'marathi-educational',
+      name: 'Marathi (Educational)',
+      description: 'Marathi translation with educational context and quality rules',
+      systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into Marathi.
+
+MANDATORY NUMBER TRANSLATION RULES:
+- ALWAYS convert ALL Arabic numerals (0-9) to Marathi numerals
+- 0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९
+- This includes standalone numbers, numbers in text, and any numeric content
+- NEVER leave Arabic numerals untranslated
+
+MARATHI TRANSLATION QUALITY RULES (MANDATORY):
+
+1. TONE AND REGISTER:
+- Use colloquial, student-friendly Marathi over overly formal or Sanskritised phrases
+- Avoid bureaucratic vocabulary unless contextually required
+- Use respectful tone appropriate for educational content
+
+2. FORMAL WORDS TO REPLACE:
+- औपचारिक → आवश्यक / सरकारी
+- प्रस्ताव → योजना
+- स्पष्टता → स्पष्ट समज
+- प्रशिक्षण → शिकण्याची सुरुवात
+- प्रक्रिया → पद्धत
+- संदर्भ → स्थिती / परिस्थितीनुसार
+- विश्लेषण → तपासणी / समज
+- सुलभ → सोपे / सरळ
+- स्थापित → मजबूत करणे / तयार करणे
+- सहभागिता → सहभाग / भाग घेणे
+
+3. STRUCTURE & FORMAT:
+- Ensure row-wise alignment between English and Marathi
+- Use consistent column mappings: "Question" → "प्रश्न", "Option1" → "पर्याय 1", "Correct ans" → "योग्य उत्तर"
+- NEVER add serial numbers to column headers - translate them exactly as specified
+- Strip serial numbers or prefix numerals from analysis for content cells only
+
+4. LITERAL TRANSLATION CHECKS:
+- Avoid calque translations (literal word-for-word copying of English structure)
+- Use natural Marathi idioms where appropriate
+- Simplify English-origin phrases
+
+5. GRAMMAR CONSISTENCY:
+- Ensure proper Marathi grammar and sentence structure
+- Maintain consistent tone and register
+- Use appropriate Marathi vocabulary
+
+6. CULTURAL & CONTEXTUAL ADAPTATION:
+- Use terms familiar to Indian classrooms for educational content
+- Use Indian names and scenarios in examples when applicable
+
+EDUCATIONAL CONTEXT RULES:
+- Use student-friendly, accessible language
+- Prefer simple, clear explanations over complex terminology
+- Use examples and analogies familiar to Indian students
+- Maintain academic rigor while being approachable
+
+CRITICAL RULES:
+- NEVER change meaning or context
+- Preserve placeholders, dates, codes, emails, URLs, formulas exactly as they appear
+- For each input cell, return exactly one translated string in the same order
+- Use natural, locale-accurate phrasing and idioms
+- Maintain professional tone and accuracy
+- Preserve any special formatting indicators or placeholders
+- Translate ALL text content, including technical terms, proper nouns, and compound words
+- Be consistent with terminology throughout the translation
+- If a term appears multiple times, translate it consistently
+- For educational content, use appropriate academic terminology
+- Ensure complete translation - do not leave any English text untranslated
+
+Return only the translated strings, one per line, in the exact same order as input.`,
+      userPrompt: `Translate these Excel cell contents into Marathi. Translate ALL text content completely:
+
+{texts}
+
+CRITICAL REQUIREMENTS: 
+- Translate every word and phrase completely
+- Do not leave any English text untranslated
+- ALWAYS convert ALL numbers to Marathi numerals (0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९)
+- Be consistent with terminology
+- Provide complete Marathi translations
+- Use colloquial, student-friendly Marathi for educational content
+- Avoid overly formal or bureaucratic language
+- For column headers (Question, Option1, Option2, etc.), translate exactly without adding serial numbers
+
+Provide translations in the same order, one per line:`,
+      isDefault: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
       id: 'formal-hindi',
-      name: 'Formal Hindi (Business)',
+      name: 'Hindi (Business)',
       description: 'Formal Hindi translation suitable for business and administrative documents',
       systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into formal Hindi suitable for business and administrative contexts.
 
@@ -151,6 +241,40 @@ CRITICAL REQUIREMENTS:
 - ALWAYS convert ALL numbers to Hindi numerals
 - Maintain business-appropriate terminology
 - Provide complete Hindi translations
+
+Provide translations in the same order, one per line:`,
+      isDefault: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 'marathi-business',
+      name: 'Marathi (Business)',
+      description: 'Formal Marathi translation suitable for business and administrative documents',
+      systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into formal Marathi suitable for business and administrative contexts.
+
+MANDATORY NUMBER TRANSLATION RULES:
+- ALWAYS convert ALL Arabic numerals (0-9) to Marathi numerals
+- 0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९
+
+BUSINESS TRANSLATION RULES:
+- Use formal, professional Marathi appropriate for business documents
+- Maintain bureaucratic and administrative terminology where contextually appropriate
+- Use respectful and formal tone throughout
+- Preserve technical terms and industry-specific vocabulary
+- Ensure consistency in terminology across all translations
+
+Return only the translated strings, one per line, in the exact same order as input.`,
+      userPrompt: `Translate these Excel cell contents into formal Marathi suitable for business contexts:
+
+{texts}
+
+CRITICAL REQUIREMENTS: 
+- Translate every word and phrase completely
+- Use formal, professional Marathi
+- ALWAYS convert ALL numbers to Marathi numerals
+- Maintain business-appropriate terminology
+- Provide complete Marathi translations
 
 Provide translations in the same order, one per line:`,
       isDefault: true,
