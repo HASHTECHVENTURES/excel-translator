@@ -6,6 +6,7 @@ import { PreviewTable } from './components/PreviewTable';
 import { ProgressModal } from './components/ProgressModal';
 import QualityReportComponent from './components/QualityReport';
 import PromptEditor, { PromptTemplate } from './components/PromptEditor';
+import PromptStatus from './components/PromptStatus';
 import { 
   WorkbookState, 
   TranslationSettings as Settings, 
@@ -48,6 +49,7 @@ function App() {
   const [showQualityReport, setShowQualityReport] = useState(false);
   const [showPromptEditor, setShowPromptEditor] = useState(false);
   const [currentPromptTemplate, setCurrentPromptTemplate] = useState<PromptTemplate | null>(null);
+  const [showTranslationNotification, setShowTranslationNotification] = useState(false);
 
   const handleFileUpload = useCallback(async (file: File) => {
     try {
@@ -284,6 +286,12 @@ function App() {
 
       setProgress(1);
       setCurrentStep('preview');
+      
+      // Show notification if custom prompt was used
+      if (currentPromptTemplate) {
+        setShowTranslationNotification(true);
+        setTimeout(() => setShowTranslationNotification(false), 5000);
+      }
 
       // Generate quality report for Hindi translations
       if (state.settings.target === 'hi-IN') {
@@ -421,19 +429,6 @@ function App() {
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900">Select Language</h2>
-                    {currentPromptTemplate && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <p className="text-sm text-gray-600">
-                          Using prompt template: <span className="font-medium text-blue-600">{currentPromptTemplate.name}</span>
-                        </p>
-                        <button
-                          onClick={() => setCurrentPromptTemplate(null)}
-                          className="text-xs text-red-600 hover:text-red-700 underline"
-                        >
-                          Clear
-                        </button>
-                      </div>
-                    )}
                   </div>
                   <button
                     onClick={() => setShowPromptEditor(true)}
@@ -448,6 +443,12 @@ function App() {
                   glossary={state.glossary}
                   onSettingsChange={handleSettingsChange}
                   onGlossaryChange={handleGlossaryChange}
+                />
+
+                {/* Prompt Status */}
+                <PromptStatus
+                  currentTemplate={currentPromptTemplate}
+                  onTemplateChange={setCurrentPromptTemplate}
                 />
               </div>
 
@@ -588,6 +589,32 @@ function App() {
               }}
               currentTemplate={currentPromptTemplate}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Translation Notification */}
+      {showTranslationNotification && currentPromptTemplate && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg max-w-sm">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <div>
+                <p className="text-sm font-medium text-green-800">
+                  Translation Complete!
+                </p>
+                <p className="text-xs text-green-600">
+                  Used custom prompt: {currentPromptTemplate.name}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowTranslationNotification(false)}
+                className="text-green-400 hover:text-green-600"
+                aria-label="Close notification"
+              >
+                <XCircle className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}
