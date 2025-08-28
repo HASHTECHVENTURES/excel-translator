@@ -13,11 +13,19 @@ A modern, responsive web application that translates Excel files into Indian lan
 
 ### 🎛️ Advanced Controls
 - **Tone selection** - Formal, Neutral, or Conversational
-- **Domain-specific** - Education, Administrative, Marketing, or Technical content
+- **Domain-specific** - Marketing or Technical content
 - **Glossary support** - Preserve brand terms and custom replacements
 - **Protected columns** - Skip translation for specific columns
 - **Sheet selection** - Choose which sheets to translate
 - **Quality validation** - Automated checks for formal words, literal translations, and grammar consistency
+
+### 🎯 Custom Prompt System
+- **Real-time prompt editing** - Modify AI prompts and see changes immediately reflected
+- **Live preview** - See how your prompt changes affect the translation process
+- **Template management** - Save, edit, and reuse custom prompt templates
+- **Instant application** - Changes to prompts are applied immediately for next translation
+- **Visual feedback** - Clear indicators show when custom prompts are active
+- **Template testing** - Test your custom prompts before using them in production
 
 ### 📊 Preview & Quality
 - **Side-by-side preview** - Compare original and translated content
@@ -80,7 +88,7 @@ The built files will be in the `dist` directory.
 ### Step 2: Configure Translation Settings
 - **Target Language**: Choose Hindi or Marathi
 - **Tone**: Select formality level (Formal, Neutral, Conversational)
-- **Domain**: Specify content type for better context
+- **Domain**: Specify content type (Marketing or Technical) for better context
 - **Glossary**: Add terms to preserve or replace
 - **Sheet Selection**: Choose which sheets to translate
 - **Protected Columns**: Mark columns that shouldn't be translated
@@ -90,6 +98,32 @@ The built files will be in the `dist` directory.
 - Check statistics and quality metrics
 - Analyze translation quality with detailed reports (Hindi only)
 - Download the translated Excel file
+
+### 🎯 Customizing Translation Prompts
+
+The application includes a powerful prompt editing system that allows you to customize how the AI translates your content:
+
+#### Accessing the Prompt Editor
+1. Click the "Customize Prompts" button in the settings step
+2. Choose from existing templates or create a new one
+3. Edit the system prompt (AI instructions) and user prompt (translation request)
+
+#### How Changes Are Reflected
+- **Immediate Application**: When you save or apply a template, it's immediately active
+- **Visual Indicators**: The interface shows when a custom prompt is active
+- **Real-time Preview**: See exactly how your prompt will be used
+- **Template Testing**: Test your prompts before using them in production
+
+#### Prompt Components
+- **System Prompt**: Instructions to the AI about translation style, rules, and quality standards
+- **User Prompt**: The actual request sent to the AI with your text to translate
+- **Template Variables**: Use `{texts}` placeholder in user prompts for dynamic text insertion
+
+#### Best Practices
+- Keep system prompts focused on translation rules and style
+- Use user prompts to specify the exact format you want
+- Test templates with small samples before full translation
+- Monitor the character count to avoid performance issues
 
 ## API Configuration
 
@@ -133,11 +167,11 @@ To use your own API key:
 - **Skipped**: Empty cells, protected columns, glossary terms
 
 ### Quality Standards (Hindi)
-- **Tone**: Colloquial, student-friendly language over formal Sanskritised phrases
+- **Tone**: Natural, accessible language over formal Sanskritised phrases
 - **Formal Words**: Automatic detection and suggestions for colloquial alternatives
 - **Grammar**: Consistent pronoun usage and gender agreement
 - **Structure**: Proper column mapping and formatting consistency
-- **Cultural Context**: Indian classroom-friendly terminology and examples
+- **Cultural Context**: Indian audience-friendly terminology and examples
 
 ## Performance
 

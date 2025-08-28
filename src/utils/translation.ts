@@ -163,7 +163,7 @@ const generateSystemPrompt = (settings: TranslationSettings, glossary: GlossaryT
 HINDI TRANSLATION QUALITY RULES (MANDATORY):
 
 1. TONE AND REGISTER:
-- Use colloquial, student-friendly Hindi over overly formal or Sanskritised phrases
+- Use natural, accessible Hindi over overly formal or Sanskritised phrases
 - Avoid bureaucratic vocabulary unless contextually required
 - Use second-person respectful singular (आप, कीजिए) consistently for professional but friendly tone
 
@@ -196,15 +196,15 @@ HINDI TRANSLATION QUALITY RULES (MANDATORY):
 - Avoid mixing pronouns (don't switch between आप and तुम)
 
 6. CULTURAL & CONTEXTUAL ADAPTATION:
-- Use terms familiar to Indian classrooms for educational content
+- Use terms familiar to Indian audiences
 - Use Indian names and scenarios in examples when applicable
 ` : settings.target === 'mr-IN' ? `
 MARATHI TRANSLATION QUALITY RULES (MANDATORY):
 
 1. TONE AND REGISTER:
-- Use colloquial, student-friendly Marathi over overly formal or Sanskritised phrases
+- Use natural, accessible Marathi over overly formal or Sanskritised phrases
 - Avoid bureaucratic vocabulary unless contextually required
-- Use respectful tone appropriate for educational content
+- Use respectful tone appropriate for general content
 
 2. FORMAL WORDS TO REPLACE:
 - औपचारिक → आवश्यक / सरकारी
@@ -235,22 +235,22 @@ MARATHI TRANSLATION QUALITY RULES (MANDATORY):
 - Use appropriate Marathi vocabulary
 
 6. CULTURAL & CONTEXTUAL ADAPTATION:
-- Use terms familiar to Indian classrooms for educational content
+- Use terms familiar to Indian audiences
 - Use Indian names and scenarios in examples when applicable
 ` : '';
 
   // Domain-specific rules
-  const domainRules = settings.domain === 'education' ? `
-EDUCATIONAL CONTEXT RULES:
-- Use student-friendly, accessible language
-- Prefer simple, clear explanations over complex terminology
-- Use examples and analogies familiar to Indian students
-- Maintain academic rigor while being approachable
-` : settings.domain === 'admin' ? `
-ADMINISTRATIVE CONTEXT RULES:
-- Use professional language appropriate for administrative documents
-- Maintain administrative terminology where contextually appropriate
-- Use respectful tone throughout
+  const domainRules = settings.domain === 'marketing' ? `
+MARKETING CONTEXT RULES:
+- Use engaging, persuasive language appropriate for marketing materials
+- Maintain brand voice and messaging consistency
+- Use creative and appealing terminology
+- Focus on customer engagement and conversion
+` : settings.domain === 'technical' ? `
+TECHNICAL CONTEXT RULES:
+- Use precise technical terminology
+- Maintain accuracy in technical descriptions
+- Use clear, concise language for technical documentation
 - Preserve technical terms and industry-specific vocabulary
 ` : '';
 
@@ -272,7 +272,6 @@ CRITICAL RULES:
 - Translate ALL text content, including technical terms, proper nouns, and compound words
 - Be consistent with terminology throughout the translation
 - If a term appears multiple times, translate it consistently
-- For educational content, use appropriate academic terminology
 - Ensure complete translation - do not leave any English text untranslated
 
 ${languageQualityRules}
@@ -292,7 +291,7 @@ CRITICAL REQUIREMENTS:
 - ALWAYS convert ALL numbers to Hindi numerals (0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९)
 - Be consistent with terminology
 - Provide complete Hindi translations
-- Use colloquial, student-friendly Hindi for educational content
+- Use natural, accessible Hindi
 - Avoid overly formal or bureaucratic language
 - For column headers (Question, Option1, Option2, etc.), translate exactly without adding serial numbers
 
@@ -412,8 +411,6 @@ export const getToneOptions = () => [
 ];
 
 export const getDomainOptions = () => [
-  { value: 'education' as const, label: 'Education', description: 'Educational content and materials' },
-  { value: 'admin' as const, label: 'Administrative', description: 'Administrative documents and forms' },
   { value: 'marketing' as const, label: 'Marketing', description: 'Marketing materials and campaigns' },
   { value: 'technical' as const, label: 'Technical', description: 'Technical documentation and manuals' }
 ];
@@ -425,7 +422,7 @@ export const testCustomPrompt = async (customPrompt: PromptTemplate): Promise<bo
     const testSettings: TranslationSettings = {
       target: 'hi-IN',
       tone: 'neutral',
-      domain: 'education',
+      domain: 'technical',
       quality: 'balanced'
     };
     

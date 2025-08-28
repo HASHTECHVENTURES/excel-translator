@@ -20,8 +20,7 @@ export interface QualityReport {
 }
 
 // Formal words that should be replaced with colloquial alternatives
-const FORMAL_WORDS_MAP: Record<string, string[]> = {
-  // Hindi formal words
+const HINDI_FORMAL_WORDS_MAP: Record<string, string[]> = {
   'औपचारिक': ['ज़रूरी', 'सरकारी'],
   'प्रस्ताव': ['योजना'],
   'स्पष्टता': ['साफ़ समझ'],
@@ -41,9 +40,10 @@ const FORMAL_WORDS_MAP: Record<string, string[]> = {
   'विकास': ['बढ़ावा', 'उन्नति'],
   'सुधार': ['बेहतर बनाना', 'सुधारना'],
   'निरीक्षण': ['जांच', 'देखना'],
-  'परीक्षण': ['टेस्ट', 'जांच'],
-  
-  // Marathi formal words
+  'परीक्षण': ['टेस्ट', 'जांच']
+};
+
+const MARATHI_FORMAL_WORDS_MAP: Record<string, string[]> = {
   'औपचारिक': ['आवश्यक', 'सरकारी'],
   'प्रस्ताव': ['योजना'],
   'स्पष्टता': ['स्पष्ट समज'],
@@ -75,12 +75,13 @@ const GRAMMAR_PATTERNS = {
 export const checkTranslationQuality = (
   originalText: string,
   translatedText: string,
-  context: 'education' | 'admin' | 'marketing' | 'technical' = 'education'
+  context: 'marketing' | 'technical' = 'technical',
+  language: 'hi-IN' | 'mr-IN' = 'hi-IN'
 ): QualityReport => {
   const issues: QualityIssue[] = [];
   
   // Check for formal words
-  const formalWordIssues = checkFormalWords(translatedText);
+  const formalWordIssues = checkFormalWords(translatedText, language);
   issues.push(...formalWordIssues);
   
   // Check for literal translations
@@ -118,10 +119,12 @@ export const checkTranslationQuality = (
   };
 };
 
-const checkFormalWords = (text: string): QualityIssue[] => {
+const checkFormalWords = (text: string, language: 'hi-IN' | 'mr-IN' = 'hi-IN'): QualityIssue[] => {
   const issues: QualityIssue[] = [];
   
-  for (const [formalWord, alternatives] of Object.entries(FORMAL_WORDS_MAP)) {
+  const formalWordsMap = language === 'hi-IN' ? HINDI_FORMAL_WORDS_MAP : MARATHI_FORMAL_WORDS_MAP;
+  
+  for (const [formalWord, alternatives] of Object.entries(formalWordsMap)) {
     if (text.includes(formalWord)) {
       // Check if this is a column header or standalone term
       const isColumnHeader = /^(Question|Option\d+|Correct ans|Answer|Explanation)$/i.test(text);
@@ -197,8 +200,8 @@ const checkGrammar = (text: string): QualityIssue[] => {
 const checkTone = (text: string, context: string): QualityIssue[] => {
   const issues: QualityIssue[] = [];
   
-  // Check for overly formal tone in educational context
-  if (context === 'education') {
+  // Check for overly formal tone in technical context
+  if (context === 'technical') {
     const formalIndicators = [
       'कृपया ध्यान दें',
       'सावधानीपूर्वक',
@@ -211,8 +214,8 @@ const checkTone = (text: string, context: string): QualityIssue[] => {
         issues.push({
           type: 'tone',
           severity: 'low',
-          message: 'Overly formal tone detected for educational context.',
-          suggestion: 'Use more student-friendly, approachable language.',
+          message: 'Overly formal tone detected for technical context.',
+          suggestion: 'Use more accessible, clear language.',
           originalText: '',
           translatedText: text
         });

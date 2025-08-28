@@ -30,13 +30,14 @@ const PromptEditor: React.FC<PromptEditorProps> = ({ onPromptChange, currentTemp
     systemPrompt: '',
     userPrompt: ''
   });
+  const [lastSavedTemplate, setLastSavedTemplate] = useState<PromptTemplate | null>(null);
 
   // Default templates
   const defaultTemplates: PromptTemplate[] = [
     {
       id: 'default-hindi',
-      name: 'Hindi (Educational)',
-      description: 'Hindi translation with educational context and quality rules',
+      name: 'Hindi (General)',
+      description: 'Hindi translation with general context and quality rules',
       systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into Hindi.
 
 MANDATORY NUMBER TRANSLATION RULES:
@@ -48,7 +49,7 @@ MANDATORY NUMBER TRANSLATION RULES:
 HINDI TRANSLATION QUALITY RULES (MANDATORY):
 
 1. TONE AND REGISTER:
-- Use colloquial, student-friendly Hindi over overly formal or Sanskritised phrases
+- Use natural, accessible Hindi over overly formal or Sanskritised phrases
 - Avoid bureaucratic vocabulary unless contextually required
 - Use second-person respectful singular (आप, कीजिए) consistently for professional but friendly tone
 
@@ -81,14 +82,8 @@ HINDI TRANSLATION QUALITY RULES (MANDATORY):
 - Avoid mixing pronouns (don't switch between आप and तुम)
 
 6. CULTURAL & CONTEXTUAL ADAPTATION:
-- Use terms familiar to Indian classrooms for educational content
+- Use terms familiar to Indian audiences
 - Use Indian names and scenarios in examples when applicable
-
-EDUCATIONAL CONTEXT RULES:
-- Use student-friendly, accessible language
-- Prefer simple, clear explanations over complex terminology
-- Use examples and analogies familiar to Indian students
-- Maintain academic rigor while being approachable
 
 CRITICAL RULES:
 - NEVER change meaning or context
@@ -100,7 +95,6 @@ CRITICAL RULES:
 - Translate ALL text content, including technical terms, proper nouns, and compound words
 - Be consistent with terminology throughout the translation
 - If a term appears multiple times, translate it consistently
-- For educational content, use appropriate academic terminology
 - Ensure complete translation - do not leave any English text untranslated
 
 Return only the translated strings, one per line, in the exact same order as input.`,
@@ -114,7 +108,7 @@ CRITICAL REQUIREMENTS:
 - ALWAYS convert ALL numbers to Hindi numerals (0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९)
 - Be consistent with terminology
 - Provide complete Hindi translations
-- Use colloquial, student-friendly Hindi for educational content
+- Use natural, accessible Hindi
 - Avoid overly formal or bureaucratic language
 - For column headers (Question, Option1, Option2, etc.), translate exactly without adding serial numbers
 
@@ -124,9 +118,9 @@ Provide translations in the same order, one per line:`,
       updatedAt: new Date()
     },
     {
-      id: 'marathi-educational',
-      name: 'Marathi (Educational)',
-      description: 'Marathi translation with educational context and quality rules',
+      id: 'marathi-general',
+      name: 'Marathi (General)',
+      description: 'Marathi translation with general context and quality rules',
       systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into Marathi.
 
 MANDATORY NUMBER TRANSLATION RULES:
@@ -138,9 +132,9 @@ MANDATORY NUMBER TRANSLATION RULES:
 MARATHI TRANSLATION QUALITY RULES (MANDATORY):
 
 1. TONE AND REGISTER:
-- Use colloquial, student-friendly Marathi over overly formal or Sanskritised phrases
+- Use natural, accessible Marathi over overly formal or Sanskritised phrases
 - Avoid bureaucratic vocabulary unless contextually required
-- Use respectful tone appropriate for educational content
+- Use respectful tone appropriate for general content
 
 2. FORMAL WORDS TO REPLACE:
 - औपचारिक → आवश्यक / सरकारी
@@ -171,14 +165,8 @@ MARATHI TRANSLATION QUALITY RULES (MANDATORY):
 - Use appropriate Marathi vocabulary
 
 6. CULTURAL & CONTEXTUAL ADAPTATION:
-- Use terms familiar to Indian classrooms for educational content
+- Use terms familiar to Indian audiences
 - Use Indian names and scenarios in examples when applicable
-
-EDUCATIONAL CONTEXT RULES:
-- Use student-friendly, accessible language
-- Prefer simple, clear explanations over complex terminology
-- Use examples and analogies familiar to Indian students
-- Maintain academic rigor while being approachable
 
 CRITICAL RULES:
 - NEVER change meaning or context
@@ -190,7 +178,6 @@ CRITICAL RULES:
 - Translate ALL text content, including technical terms, proper nouns, and compound words
 - Be consistent with terminology throughout the translation
 - If a term appears multiple times, translate it consistently
-- For educational content, use appropriate academic terminology
 - Ensure complete translation - do not leave any English text untranslated
 
 Return only the translated strings, one per line, in the exact same order as input.`,
@@ -204,77 +191,9 @@ CRITICAL REQUIREMENTS:
 - ALWAYS convert ALL numbers to Marathi numerals (0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९)
 - Be consistent with terminology
 - Provide complete Marathi translations
-- Use colloquial, student-friendly Marathi for educational content
+- Use natural, accessible Marathi
 - Avoid overly formal or bureaucratic language
 - For column headers (Question, Option1, Option2, etc.), translate exactly without adding serial numbers
-
-Provide translations in the same order, one per line:`,
-      isDefault: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: 'hindi-business',
-      name: 'Hindi (Business)',
-      description: 'Hindi translation suitable for business and administrative documents',
-      systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into Hindi suitable for business and administrative contexts.
-
-MANDATORY NUMBER TRANSLATION RULES:
-- ALWAYS convert ALL Arabic numerals (0-9) to Hindi numerals
-- 0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९
-
-BUSINESS TRANSLATION RULES:
-- Use professional Hindi appropriate for business documents
-- Maintain administrative terminology where contextually appropriate
-- Use respectful tone throughout
-- Preserve technical terms and industry-specific vocabulary
-- Ensure consistency in terminology across all translations
-
-Return only the translated strings, one per line, in the exact same order as input.`,
-      userPrompt: `Translate these Excel cell contents into Hindi suitable for business contexts:
-
-{texts}
-
-CRITICAL REQUIREMENTS: 
-- Translate every word and phrase completely
-- Use professional Hindi
-- ALWAYS convert ALL numbers to Hindi numerals
-- Maintain business-appropriate terminology
-- Provide complete Hindi translations
-
-Provide translations in the same order, one per line:`,
-      isDefault: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: 'marathi-business',
-      name: 'Marathi (Business)',
-      description: 'Marathi translation suitable for business and administrative documents',
-      systemPrompt: `You are a professional translator for Indian languages. Translate the provided Excel cell texts into Marathi suitable for business and administrative contexts.
-
-MANDATORY NUMBER TRANSLATION RULES:
-- ALWAYS convert ALL Arabic numerals (0-9) to Marathi numerals
-- 0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९
-
-BUSINESS TRANSLATION RULES:
-- Use professional Marathi appropriate for business documents
-- Maintain administrative terminology where contextually appropriate
-- Use respectful tone throughout
-- Preserve technical terms and industry-specific vocabulary
-- Ensure consistency in terminology across all translations
-
-Return only the translated strings, one per line, in the exact same order as input.`,
-      userPrompt: `Translate these Excel cell contents into Marathi suitable for business contexts:
-
-{texts}
-
-CRITICAL REQUIREMENTS: 
-- Translate every word and phrase completely
-- Use professional Marathi
-- ALWAYS convert ALL numbers to Marathi numerals
-- Maintain business-appropriate terminology
-- Provide complete Marathi translations
 
 Provide translations in the same order, one per line:`,
       isDefault: true,
@@ -334,8 +253,18 @@ Provide translations in the same order, one per line:`,
     setTemplates(updatedTemplates);
     localStorage.setItem('translation-templates', JSON.stringify(updatedTemplates));
     setSelectedTemplate(newTemplate);
+    setLastSavedTemplate(newTemplate);
     setIsEditing(false);
+    
+    // Immediately apply the template and show feedback
     onPromptChange(newTemplate);
+    
+    // Show success message
+    const successMessage = document.createElement('div');
+    successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+    successMessage.textContent = `✅ Template "${newTemplate.name}" saved and applied!`;
+    document.body.appendChild(successMessage);
+    setTimeout(() => document.body.removeChild(successMessage), 3000);
   };
 
   const deleteTemplate = (template: PromptTemplate) => {
@@ -428,6 +357,18 @@ Provide translations in the same order, one per line:`,
     } finally {
       setIsTesting(false);
     }
+  };
+
+  const applyTemplate = (template: PromptTemplate) => {
+    onPromptChange(template);
+    setLastSavedTemplate(template);
+    
+    // Show immediate feedback
+    const successMessage = document.createElement('div');
+    successMessage.className = 'fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+    successMessage.textContent = `🎯 Template "${template.name}" applied! Changes will be reflected in next translation.`;
+    document.body.appendChild(successMessage);
+    setTimeout(() => document.body.removeChild(successMessage), 3000);
   };
 
   return (
@@ -570,13 +511,18 @@ Provide translations in the same order, one per line:`,
                     <label className="block text-sm font-medium text-gray-700">
                       System Prompt
                     </label>
-                    <button
-                      onClick={() => setShowPreview(!showPreview)}
-                      className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
-                    >
-                      {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      {showPreview ? 'Hide Preview' : 'Show Preview'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">
+                        {editForm.systemPrompt.length} characters
+                      </span>
+                      <button
+                        onClick={() => setShowPreview(!showPreview)}
+                        className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+                      >
+                        {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {showPreview ? 'Hide Preview' : 'Show Preview'}
+                      </button>
+                    </div>
                   </div>
                   {showPreview ? (
                     <div className="p-4 bg-gray-50 rounded-lg border max-h-64 overflow-y-auto">
@@ -607,6 +553,34 @@ Provide translations in the same order, one per line:`,
                   <p className="text-xs text-gray-500 mt-1">
                     Use {'{texts}'} as a placeholder for the text to be translated.
                   </p>
+                </div>
+
+                {/* Live Preview Section */}
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <h4 className="text-sm font-medium text-blue-900 mb-3">Live Preview</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs text-blue-700 mb-1">Sample Input:</p>
+                      <div className="p-2 bg-white rounded border text-xs">
+                        Hello, World
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-blue-700 mb-1">Generated User Prompt:</p>
+                      <div className="p-2 bg-white rounded border text-xs font-mono max-h-32 overflow-y-auto">
+                        {editForm.userPrompt.replace('{texts}', '1. Hello, World')}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-blue-700 mb-1">System Prompt Length:</p>
+                      <div className="text-xs text-blue-600">
+                        {editForm.systemPrompt.length} characters 
+                        {editForm.systemPrompt.length > 4000 && (
+                          <span className="text-orange-600 ml-2">⚠️ Long prompt may affect performance</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -645,23 +619,26 @@ Provide translations in the same order, one per line:`,
               <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                 <div className="text-sm text-gray-500">
                   Last updated: {new Date(selectedTemplate.updatedAt).toLocaleString()}
+                  {lastSavedTemplate && lastSavedTemplate.id === selectedTemplate.id && (
+                    <span className="ml-2 text-green-600">✓ Applied</span>
+                  )}
                 </div>
-                                 <div className="flex items-center gap-2">
-                   <button
-                     onClick={() => testTemplate(selectedTemplate)}
-                     disabled={isTesting}
-                     className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
-                   >
-                     <Play className="w-4 h-4" />
-                     {isTesting ? 'Testing...' : 'Test Template'}
-                   </button>
-                   <button
-                     onClick={() => onPromptChange(selectedTemplate)}
-                     className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
-                   >
-                     Use This Template
-                   </button>
-                 </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => testTemplate(selectedTemplate)}
+                    disabled={isTesting}
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
+                  >
+                    <Play className="w-4 h-4" />
+                    {isTesting ? 'Testing...' : 'Test Template'}
+                  </button>
+                  <button
+                    onClick={() => applyTemplate(selectedTemplate)}
+                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    Apply This Template
+                  </button>
+                </div>
               </div>
             </div>
           ) : (

@@ -62,7 +62,11 @@ const PromptStatus: React.FC<PromptStatusProps> = ({ currentTemplate, onTemplate
   return (
     <div className="space-y-3">
       {/* Status Bar */}
-      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+      <div className={`flex items-center justify-between p-4 rounded-lg border-2 ${
+        currentTemplate 
+          ? 'bg-green-50 border-green-200 shadow-sm' 
+          : 'bg-gray-50 border-gray-200'
+      }`}>
         <div className="flex items-center gap-3">
           {getStatusIcon()}
           <div>
@@ -70,9 +74,14 @@ const PromptStatus: React.FC<PromptStatusProps> = ({ currentTemplate, onTemplate
               {getStatusText()}
             </p>
             {currentTemplate && (
-              <p className="text-xs text-gray-500">
-                Template: {currentTemplate.name}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-gray-500">
+                  Template: {currentTemplate.name}
+                </span>
+                <span className="px-2 py-0.5 text-xs bg-green-500 text-white rounded-full">
+                  Active
+                </span>
+              </div>
             )}
           </div>
         </div>

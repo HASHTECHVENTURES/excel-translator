@@ -26,7 +26,7 @@ const initialState: WorkbookState = {
   settings: {
     target: 'hi-IN',
     tone: 'neutral',
-    domain: 'admin',
+    domain: 'technical',
     quality: 'balanced'
   },
   stats: {
