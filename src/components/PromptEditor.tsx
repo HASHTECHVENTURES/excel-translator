@@ -161,7 +161,14 @@ Provide translations in the same order, one per line:`,
     // Load templates from localStorage or use defaults
     const savedTemplates = localStorage.getItem('translation-templates');
     if (savedTemplates) {
-      setTemplates(JSON.parse(savedTemplates));
+      const parsed = JSON.parse(savedTemplates);
+      // Convert date strings back to Date objects
+      const templatesWithDates = parsed.map((template: any) => ({
+        ...template,
+        createdAt: new Date(template.createdAt),
+        updatedAt: new Date(template.updatedAt)
+      }));
+      setTemplates(templatesWithDates);
     } else {
       setTemplates(defaultTemplates);
       localStorage.setItem('translation-templates', JSON.stringify(defaultTemplates));
@@ -231,13 +238,32 @@ Provide translations in the same order, one per line:`,
   };
 
   const startEditing = (template: PromptTemplate) => {
-    setEditForm({
-      name: template.name,
-      description: template.description,
-      systemPrompt: template.systemPrompt,
-      userPrompt: template.userPrompt
-    });
-    setSelectedTemplate(template);
+    // If it's a default template, create a copy for editing
+    if (template.isDefault) {
+      const copyTemplate: PromptTemplate = {
+        ...template,
+        id: `copy-${template.id}-${Date.now()}`,
+        name: `${template.name} (Copy)`,
+        isDefault: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      setEditForm({
+        name: copyTemplate.name,
+        description: copyTemplate.description,
+        systemPrompt: copyTemplate.systemPrompt,
+        userPrompt: copyTemplate.userPrompt
+      });
+      setSelectedTemplate(copyTemplate);
+    } else {
+      setEditForm({
+        name: template.name,
+        description: template.description,
+        systemPrompt: template.systemPrompt,
+        userPrompt: template.userPrompt
+      });
+      setSelectedTemplate(template);
+    }
     setIsEditing(true);
   };
 
@@ -314,30 +340,30 @@ Provide translations in the same order, one per line:`,
                       </span>
                     </div>
                   </div>
-                  {!template.isDefault && (
-                    <div className="flex items-center gap-1">
-                                             <button
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           startEditing(template);
-                         }}
-                         className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                         aria-label={`Edit template ${template.name}`}
-                       >
-                         <Edit3 className="w-4 h-4" />
-                       </button>
-                       <button
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           deleteTemplate(template);
-                         }}
-                         className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                         aria-label={`Delete template ${template.name}`}
-                       >
-                         <Trash2 className="w-4 h-4" />
-                       </button>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startEditing(template);
+                      }}
+                      className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                      aria-label={`Edit template ${template.name}`}
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                    {!template.isDefault && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteTemplate(template);
+                        }}
+                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        aria-label={`Delete template ${template.name}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -449,15 +475,13 @@ Provide translations in the same order, one per line:`,
                   <h3 className="text-lg font-medium text-gray-900">{selectedTemplate.name}</h3>
                   <p className="text-sm text-gray-600 mt-1">{selectedTemplate.description}</p>
                 </div>
-                {!selectedTemplate.isDefault && (
-                  <button
-                    onClick={() => startEditing(selectedTemplate)}
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                    Edit Template
-                  </button>
-                )}
+                                 <button
+                   onClick={() => startEditing(selectedTemplate)}
+                   className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                 >
+                   <Edit3 className="w-4 h-4" />
+                   {selectedTemplate.isDefault ? 'Copy & Edit' : 'Edit Template'}
+                 </button>
               </div>
 
               <div className="space-y-4">

@@ -558,7 +558,14 @@ function App() {
       {/* Prompt Editor Modal */}
       {showPromptEditor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="max-w-7xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="max-w-7xl w-full max-h-[90vh] overflow-y-auto relative">
+            <button
+              onClick={() => setShowPromptEditor(false)}
+              className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-600 bg-white rounded-full shadow-lg transition-colors"
+              aria-label="Close prompt editor"
+            >
+              <XCircle className="w-6 h-6" />
+            </button>
             <PromptEditor
               onPromptChange={(template) => {
                 setCurrentPromptTemplate(template);
