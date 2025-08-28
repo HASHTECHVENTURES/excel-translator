@@ -17,11 +17,13 @@ A modern, responsive web application that translates Excel files into Indian lan
 - **Glossary support** - Preserve brand terms and custom replacements
 - **Protected columns** - Skip translation for specific columns
 - **Sheet selection** - Choose which sheets to translate
+- **Quality validation** - Automated checks for formal words, literal translations, and grammar consistency
 
 ### 📊 Preview & Quality
 - **Side-by-side preview** - Compare original and translated content
 - **Real-time statistics** - Track translated, skipped, and conflicted cells
 - **Progress tracking** - Visual progress indicator during translation
+- **Quality analysis** - Automated Hindi translation quality checking with detailed reports
 - **Error handling** - Graceful error handling with user-friendly messages
 
 ## Technology Stack
@@ -30,6 +32,7 @@ A modern, responsive web application that translates Excel files into Indian lan
 - **Styling**: Tailwind CSS
 - **Excel Processing**: SheetJS (xlsx)
 - **AI Translation**: Google Gemini API
+- **Quality Analysis**: Custom Hindi translation quality checker
 - **Build Tool**: Vite
 - **Icons**: Lucide React
 
@@ -85,6 +88,7 @@ The built files will be in the `dist` directory.
 ### Step 3: Preview & Download
 - Review translations with side-by-side comparison
 - Check statistics and quality metrics
+- Analyze translation quality with detailed reports (Hindi only)
 - Download the translated Excel file
 
 ## API Configuration
@@ -127,6 +131,13 @@ To use your own API key:
 - **Translated**: Text content, headers, labels
 - **Preserved**: Numbers, dates, formulas, emails, URLs, codes, IDs
 - **Skipped**: Empty cells, protected columns, glossary terms
+
+### Quality Standards (Hindi)
+- **Tone**: Colloquial, student-friendly language over formal Sanskritised phrases
+- **Formal Words**: Automatic detection and suggestions for colloquial alternatives
+- **Grammar**: Consistent pronoun usage and gender agreement
+- **Structure**: Proper column mapping and formatting consistency
+- **Cultural Context**: Indian classroom-friendly terminology and examples
 
 ## Performance
 

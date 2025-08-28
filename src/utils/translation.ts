@@ -140,7 +140,57 @@ const generateSystemPrompt = (settings: TranslationSettings, glossary: GlossaryT
     'hi-IN': 'Hindi',
     'mr-IN': 'Marathi'
   };
-  
+
+  // Hindi-specific quality rules
+  const hindiQualityRules = settings.target === 'hi-IN' ? `
+HINDI TRANSLATION QUALITY RULES (MANDATORY):
+
+1. TONE AND REGISTER:
+- Use colloquial, student-friendly Hindi over overly formal or Sanskritised phrases
+- Avoid bureaucratic vocabulary unless contextually required
+- Use second-person respectful singular (आप, कीजिए) consistently for professional but friendly tone
+
+2. FORMAL WORDS TO REPLACE:
+- औपचारिक → ज़रूरी / सरकारी
+- प्रस्ताव → योजना
+- स्पष्टता → साफ़ समझ
+- प्रशिक्षण → सीखने की पहल
+- प्रक्रिया → तरीका
+- संदर्भ → साथ / स्थिति के अनुसार
+- विश्लेषण → जांच / समझ
+- सुलभ → आसान / सरल
+- स्थापित → मज़बूत करना / बनाना
+- सहभागिता → भागीदारी / हिस्सा लेना
+
+3. STRUCTURE & FORMAT:
+- Ensure row-wise alignment between English and Hindi
+- Use consistent column mappings: "Question" → "प्रश्न", "Option1" → "विकल्प 1", "Correct ans" → "सही उत्तर"
+- Strip serial numbers or prefix numerals from analysis
+
+4. LITERAL TRANSLATION CHECKS:
+- Avoid calque translations (literal word-for-word copying of English structure)
+- Use natural Hindi idioms where appropriate
+- Simplify English-origin phrases like "समय प्रबंधन"
+
+5. GRAMMAR CONSISTENCY:
+- Ensure gender agreement and postposition accuracy
+- Maintain consistent honorific usage
+- Avoid mixing pronouns (don't switch between आप and तुम)
+
+6. CULTURAL & CONTEXTUAL ADAPTATION:
+- Use terms familiar to Indian classrooms for educational content
+- Use Indian names and scenarios in examples when applicable
+` : '';
+
+  // Domain-specific rules
+  const domainRules = settings.domain === 'education' ? `
+EDUCATIONAL CONTEXT RULES:
+- Use student-friendly, accessible language
+- Prefer simple, clear explanations over complex terminology
+- Use examples and analogies familiar to Indian students
+- Maintain academic rigor while being approachable
+` : '';
+
   return `You are a professional translator for Indian languages. Translate the provided Excel cell texts into ${languageMap[settings.target]}.
 
 MANDATORY NUMBER TRANSLATION RULES:
@@ -162,6 +212,9 @@ CRITICAL RULES:
 - For educational content, use appropriate academic terminology
 - Ensure complete translation - do not leave any English text untranslated
 
+${hindiQualityRules}
+${domainRules}
+
 Return only the translated strings, one per line, in the exact same order as input.`;
 };
 
@@ -176,6 +229,8 @@ CRITICAL REQUIREMENTS:
 - ALWAYS convert ALL numbers to Hindi numerals (0→०, 1→१, 2→२, 3→३, 4→४, 5→५, 6→६, 7→७, 8→८, 9→९)
 - Be consistent with terminology
 - Provide complete Hindi translations
+- Use colloquial, student-friendly Hindi for educational content
+- Avoid overly formal or bureaucratic language
 
 Provide translations in the same order, one per line:`;
 };

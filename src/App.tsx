@@ -4,6 +4,7 @@ import { TranslationSettings } from './components/TranslationSettings';
 import { SheetSelector } from './components/SheetSelector';
 import { PreviewTable } from './components/PreviewTable';
 import { ProgressModal } from './components/ProgressModal';
+import QualityReportComponent from './components/QualityReport';
 import { 
   WorkbookState, 
   TranslationSettings as Settings, 
@@ -13,7 +14,8 @@ import {
 } from './types';
 import { parseExcelFile, exportToExcel, shouldSkipCell } from './utils/excel';
 import { translateCells } from './utils/translation';
-import { Download, RotateCcw, FileSpreadsheet } from 'lucide-react';
+import { checkTranslationQuality } from './utils/qualityChecker';
+import { Download, RotateCcw, FileSpreadsheet, CheckCircle } from 'lucide-react';
 
 const initialState: WorkbookState = {
   fileName: '',
@@ -41,6 +43,8 @@ function App() {
   const [progress, setProgress] = useState(0);
   const [currentSheetIndex, setCurrentSheetIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [qualityReport, setQualityReport] = useState<any>(null);
+  const [showQualityReport, setShowQualityReport] = useState(false);
 
   const handleFileUpload = useCallback(async (file: File) => {
     try {
@@ -277,6 +281,47 @@ function App() {
       setProgress(1);
       setCurrentStep('preview');
 
+      // Generate quality report for Hindi translations
+      if (state.settings.target === 'hi-IN') {
+        const qualityIssues = [];
+        let totalScore = 0;
+        let totalCells = 0;
+
+        updatedSheets.forEach(sheet => {
+          if (sheet.include && sheet.translatedRows) {
+            sheet.translatedRows.forEach(row => {
+              row.forEach(cell => {
+                if (cell.translated && typeof cell.v === 'string') {
+                  const report = checkTranslationQuality(
+                    cell.v,
+                    cell.translated,
+                    state.settings.domain
+                  );
+                  qualityIssues.push(...report.issues);
+                  totalScore += report.score;
+                  totalCells++;
+                }
+              });
+            });
+          }
+        });
+
+        const averageScore = totalCells > 0 ? Math.round(totalScore / totalCells) : 100;
+        const allIssues = qualityIssues.filter(issue => issue.originalText === '' || issue.originalText);
+        
+        setQualityReport({
+          issues: allIssues,
+          score: averageScore,
+          summary: {
+            totalIssues: allIssues.length,
+            criticalIssues: allIssues.filter(issue => issue.severity === 'high').length,
+            formalWordIssues: allIssues.filter(issue => issue.type === 'formal_word').length,
+            literalTranslationIssues: allIssues.filter(issue => issue.type === 'literal_translation').length,
+            grammarIssues: allIssues.filter(issue => issue.type === 'grammar').length
+          }
+        });
+      }
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Translation failed');
       setState(prev => ({ ...prev, isProcessing: false }));
@@ -409,13 +454,25 @@ function App() {
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-gray-900">Translation Preview</h2>
                   
-                  <button
-                    onClick={handleDownload}
-                    className="flex items-center gap-2 btn-primary"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download Excel
-                  </button>
+                  <div className="flex items-center gap-3">
+                    {qualityReport && state.settings.target === 'hi-IN' && (
+                      <button
+                        onClick={() => setShowQualityReport(true)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                        Quality Report ({qualityReport.summary.totalIssues} issues)
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={handleDownload}
+                      className="flex items-center gap-2 btn-primary"
+                    >
+                      <Download className="w-4 h-4" />
+                      Download Excel
+                    </button>
+                  </div>
                 </div>
 
                 <PreviewTable
@@ -472,6 +529,18 @@ function App() {
         error={error}
         onCancel={handleCloseModal}
       />
+
+      {/* Quality Report Modal */}
+      {showQualityReport && qualityReport && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <QualityReportComponent
+              report={qualityReport}
+              onClose={() => setShowQualityReport(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
