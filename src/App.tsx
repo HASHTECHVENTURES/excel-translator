@@ -419,7 +419,22 @@ function App() {
             <>
               <div className="card">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Select Language</h2>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Select Language</h2>
+                    {currentPromptTemplate && (
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-sm text-gray-600">
+                          Using prompt template: <span className="font-medium text-blue-600">{currentPromptTemplate.name}</span>
+                        </p>
+                        <button
+                          onClick={() => setCurrentPromptTemplate(null)}
+                          className="text-xs text-red-600 hover:text-red-700 underline"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   <button
                     onClick={() => setShowPromptEditor(true)}
                     className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"

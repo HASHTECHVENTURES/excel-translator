@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Edit3, Trash2, Plus, Eye, EyeOff, RotateCcw } from 'lucide-react';
+import { Save, Edit3, Trash2, Plus, Eye, EyeOff, RotateCcw, Play } from 'lucide-react';
+import { testCustomPrompt } from '../utils/translation';
 
 export interface PromptTemplate {
   id: string;
@@ -22,6 +23,7 @@ const PromptEditor: React.FC<PromptEditorProps> = ({ onPromptChange, currentTemp
   const [selectedTemplate, setSelectedTemplate] = useState<PromptTemplate | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
   const [editForm, setEditForm] = useState({
     name: '',
     description: '',
@@ -288,6 +290,22 @@ Provide translations in the same order, one per line:`,
     setIsEditing(true);
   };
 
+  const testTemplate = async (template: PromptTemplate) => {
+    setIsTesting(true);
+    try {
+      const success = await testCustomPrompt(template);
+      if (success) {
+        alert('✅ Template test successful! Custom prompt is working correctly.');
+      } else {
+        alert('❌ Template test failed. Please check the console for details.');
+      }
+    } catch (error) {
+      alert('❌ Template test failed: ' + error);
+    } finally {
+      setIsTesting(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -504,12 +522,22 @@ Provide translations in the same order, one per line:`,
                 <div className="text-sm text-gray-500">
                   Last updated: {new Date(selectedTemplate.updatedAt).toLocaleString()}
                 </div>
-                <button
-                  onClick={() => onPromptChange(selectedTemplate)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  Use This Template
-                </button>
+                                 <div className="flex items-center gap-2">
+                   <button
+                     onClick={() => testTemplate(selectedTemplate)}
+                     disabled={isTesting}
+                     className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
+                   >
+                     <Play className="w-4 h-4" />
+                     {isTesting ? 'Testing...' : 'Test Template'}
+                   </button>
+                   <button
+                     onClick={() => onPromptChange(selectedTemplate)}
+                     className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
+                   >
+                     Use This Template
+                   </button>
+                 </div>
               </div>
             </div>
           ) : (

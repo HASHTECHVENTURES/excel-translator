@@ -95,6 +95,15 @@ const translateBatch = async (
   const systemPrompt = customPrompt ? customPrompt.systemPrompt : generateSystemPrompt(settings, glossary);
   const userPrompt = customPrompt ? customPrompt.userPrompt.replace('{texts}', texts.map((text, index) => `${index + 1}. ${text}`).join('\n')) : generateUserPrompt(texts);
   
+  // Log which prompt template is being used
+  if (customPrompt) {
+    console.log('🎯 Using custom prompt template:', customPrompt.name);
+    console.log('📝 Custom system prompt length:', systemPrompt.length, 'characters');
+    console.log('📝 Custom user prompt length:', userPrompt.length, 'characters');
+  } else {
+    console.log('🎯 Using default prompt template');
+  }
+  
   const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: {
@@ -363,3 +372,26 @@ export const getDomainOptions = () => [
   { value: 'marketing' as const, label: 'Marketing', description: 'Marketing materials and campaigns' },
   { value: 'technical' as const, label: 'Technical', description: 'Technical documentation and manuals' }
 ];
+
+// Test function to verify custom prompts are working
+export const testCustomPrompt = async (customPrompt: PromptTemplate): Promise<boolean> => {
+  try {
+    const testTexts = ['Hello', 'World', 'Test'];
+    const testSettings: TranslationSettings = {
+      target: 'hi-IN',
+      tone: 'neutral',
+      domain: 'education',
+      quality: 'balanced'
+    };
+    
+    console.log('🧪 Testing custom prompt template:', customPrompt.name);
+    
+    const result = await translateBatch(testTexts, testSettings, [], customPrompt);
+    
+    console.log('✅ Custom prompt test successful:', result);
+    return result.length === testTexts.length;
+  } catch (error) {
+    console.error('❌ Custom prompt test failed:', error);
+    return false;
+  }
+};
